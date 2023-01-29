@@ -1,86 +1,43 @@
 package ru.yandex.practicum.filmorate;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTest {
-    Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-            .create();
-    HttpClient client = HttpClient.newHttpClient();
-    URI url = URI.create("http://localhost:8080/users");
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @Test
-    void createTest() throws IOException, InterruptedException {
-        FilmorateApplication.main(null);
+    void whenCreateAndUpdateUserWithNullName_thenNameBecomesSameAsLogin() {
         User user = new User(0, "mail@mail.ru", "meltsov", null,
                 LocalDate.of(1984, 12, 15));
-        String json = gson.toJson(user);
-        HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(body)
-                .build();
-        HttpResponse<String> expectedResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        User actualUser = new User(1, "mail@mail.ru", "meltsov", "meltsov",
-                LocalDate.of(1984, 12, 15));
-        String actualResponse = gson.toJson(actualUser);
+        User actualUser = restTemplate.postForObject("/users", user, User.class);
 
-        assertEquals(expectedResponse.body(), actualResponse, "Wrong response body.");
-        assertEquals(expectedResponse.statusCode(), 200, "Wrong status code.");
-    }
+        assertThat(actualUser.getName(), is("meltsov"));
 
-    @Test
-    void updateTest() throws IOException, InterruptedException {
-        FilmorateApplication.main(null);
-        User user = new User(1, "mail@yandex.ru", "meltsov", null,
+        User updatedUser = new User(actualUser.getId(), "mail@yandex.ru", "meltsov", null,
                 LocalDate.of(2000, 12, 15));
-        String json = gson.toJson(user);
-        HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(body)
-                .build();
-        HttpResponse<String> expectedResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpEntity<User> entity = new HttpEntity<>(updatedUser);
 
-        User actualUser = new User(1, "mail@yandex.ru", "meltsov", "meltsov",
-                LocalDate.of(2000, 12, 15));
-        String actualResponse = gson.toJson(actualUser);
+        ResponseEntity<User> response = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
 
-        assertEquals(expectedResponse.body(), actualResponse, "Wrong response body.");
-        assertEquals(expectedResponse.statusCode(), 200, "Wrong status code.");
+        assertThat(response.getBody().getEmail(), is("mail@yandex.ru"));
+        assertThat(response.getBody().getName(), is("meltsov"));
     }
-
-    static class LocalDateAdapter extends TypeAdapter<LocalDate> {
-        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        @Override
-        public void write(final JsonWriter jsonWriter, final LocalDate localDate) throws IOException {
-            jsonWriter.value(localDate != null ? localDate.format(formatter) : null);
-        }
-
-        @Override
-        public LocalDate read(final JsonReader jsonReader) throws IOException {
-            return LocalDate.parse(jsonReader.nextString(), formatter);
-        }
-    }
-
 }
