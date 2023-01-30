@@ -12,10 +12,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({ FIELD })
 @Retention(RUNTIME)
-@Constraint(validatedBy = FutureFromSpecifiedDateValidator.class)
+@Constraint(validatedBy = FutureFromCinemaBirthdayValidator.class)
 @Documented
-public @interface FutureFromSpecifiedDate {
-    String message() default "{FutureFromSpecifiedDate.invalid}";
+public @interface FutureFromCinemaBirthday {
+    String message() default "{FutureFromCinemaBirthday.invalid}";
 
     Class<?>[] groups() default { };
 

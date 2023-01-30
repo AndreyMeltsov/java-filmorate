@@ -17,16 +17,21 @@ import java.time.LocalDate;
 @ToString
 @EqualsAndHashCode
 public class User {
+
     @Setter
     private int id;
+
     @NotBlank
     @Email
     private String email;
+
     @NotBlank
     @Pattern(regexp = "^\\w*$")
     private String login;
+
     @Setter
     private String name;
+
     @Past
     private LocalDate birthday;
 }

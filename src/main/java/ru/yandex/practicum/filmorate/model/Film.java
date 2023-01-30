@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.filmorate.annotation.FutureFromSpecifiedDate;
+import ru.yandex.practicum.filmorate.annotation.FutureFromCinemaBirthday;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -17,15 +17,19 @@ import java.time.LocalDate;
 @ToString
 @EqualsAndHashCode
 public class Film {
+
     @Setter
     private int id;
+
     @NotBlank
     private String name;
+
     @Size(max = 200)
     private String description;
-    @FutureFromSpecifiedDate
+
+    @FutureFromCinemaBirthday
     private LocalDate releaseDate;
+
     @Positive
     private int duration;
-
 }

@@ -46,7 +46,7 @@ public class UserController {
             user.setName(user.getLogin());
         }
         if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователя с таким id не существует");
+            throw new ValidationException("No user with such id");
         }
         log.debug("User is updated: {}", user);
         users.put(user.getId(), user);
