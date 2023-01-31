@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = FutureFromCinemaBirthdayValidator.class)
 @Documented
 public @interface FutureFromCinemaBirthday {
-    String message() default "{FutureFromCinemaBirthday.invalid}";
+    String message() default "{Release date can't be earlier than 28 December 1895}";
 
     Class<?>[] groups() default { };
 
