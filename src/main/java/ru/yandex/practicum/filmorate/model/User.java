@@ -11,6 +11,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -19,7 +21,7 @@ import java.time.LocalDate;
 public class User {
 
     @Setter
-    private int id;
+    private Long id;
 
     @NotBlank
     @Email
@@ -34,4 +36,6 @@ public class User {
 
     @Past
     private LocalDate birthday;
+
+    private final Set<Long> friendIds = new HashSet<>();
 }

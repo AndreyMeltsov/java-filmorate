@@ -24,14 +24,13 @@ class UserControllerTest {
 
     @Test
     void whenCreateAndUpdateUserWithNullName_thenNameBecomesSameAsLogin() {
-        User user = new User(0, "mail@mail.ru", "meltsov", null,
-                LocalDate.of(1984, 12, 15));
+        User user = new User(0L,"mail@mail.ru", "meltsov", null, LocalDate.of(1984, 12, 15));
 
         User actualUser = restTemplate.postForObject("/users", user, User.class);
 
         assertThat(actualUser.getName(), is("meltsov"));
 
-        User updatedUser = new User(actualUser.getId(), "mail@yandex.ru", "meltsov", null,
+        User updatedUser = new User(actualUser.getId(), "mail@yandex.ru", "meltsov", "",
                 LocalDate.of(2000, 12, 15));
         HttpEntity<User> entity = new HttpEntity<>(updatedUser);
 
