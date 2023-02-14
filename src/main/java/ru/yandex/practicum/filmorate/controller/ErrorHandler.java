@@ -13,44 +13,44 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 @RestControllerAdvice(basePackages = "ru.yandex.practicum.filmorate.controller")
 @Slf4j
 public class ErrorHandler {
-    private static final String LOG_MESSAGE = "An exception occurred";
+    private static final String LOG_MESSAGE = "Bad request : ";
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validationHandle(final ValidationException e) {
-        log.error(LOG_MESSAGE, new ValidationException(e.getMessage()));
+        log.error(LOG_MESSAGE + e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handle(final Throwable e) {
-        log.error(LOG_MESSAGE, new Throwable(e.getMessage()));
+        log.error(LOG_MESSAGE + e.getMessage(), e);
         return new ErrorResponse("An unexpected error has occurred.");
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse paramHandle(final IncorrectParameterException e) {
-        log.error(LOG_MESSAGE, new IncorrectParameterException(e.getMessage()));
+        log.error(LOG_MESSAGE + e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse userHandle(final UserNotFoundException e) {
-        log.error(LOG_MESSAGE, new UserNotFoundException(e.getMessage()));
+        log.error(LOG_MESSAGE + e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse filmHandle(final FilmNotFoundException e) {
-        log.error(LOG_MESSAGE, new FilmNotFoundException(e.getMessage()));
+        log.error(LOG_MESSAGE + e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
-    public static class ErrorResponse {
+    private static class ErrorResponse {
         String error;
 
         public ErrorResponse(String error) {
