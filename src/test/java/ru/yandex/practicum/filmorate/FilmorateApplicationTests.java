@@ -130,7 +130,7 @@ class FilmorateApplicationTests {
                 LocalDate.of(1984, 5, 7),
                 97,
                 null,
-                Arrays.asList(new Film.Genre(4), new Film.Genre(7)),
+                Arrays.asList(new Film.Genre(4), new Film.Genre(6)),
                 new Film.Mpa(4));
         filmStorage.create(film);
         Film actualFilm = filmStorage.findFilmById(1L);
@@ -147,7 +147,7 @@ class FilmorateApplicationTests {
                 LocalDate.of(1992, 10, 7),
                 102,
                 null,
-                Arrays.asList(new Film.Genre(4), new Film.Genre(7)),
+                Arrays.asList(new Film.Genre(4), new Film.Genre(6)),
                 new Film.Mpa(4));
         film.setId(1L);
         filmStorage.update(film);
@@ -183,14 +183,14 @@ class FilmorateApplicationTests {
     void testFindAllGenres() {
         List<Film.Genre> genres = filmStorage.findAllGenres();
 
-        assertThat(genres).hasSize(9);
+        assertThat(genres).hasSize(6);
     }
 
     @Order(13)
     @Test
     void testFindGenreById() {
         Film.Genre actualGenre = filmStorage.findGenreById(3);
-        assertThat(actualGenre.getName()).isEqualTo("Thriller");
+        assertThat(actualGenre.getName()).isEqualTo("Мультфильм");
     }
 
     @Order(14)
