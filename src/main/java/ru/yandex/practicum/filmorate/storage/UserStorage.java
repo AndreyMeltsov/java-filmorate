@@ -12,4 +12,10 @@ public interface UserStorage {
     User update(User user);
 
     User findUserById(Long id);
+
+    void addFriend(Long userId, Long friendId);
+
+    void removeFriend(Long userId, Long friendId);
+
+    List<User> findAllFriends(Long userId);
 }

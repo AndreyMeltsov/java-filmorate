@@ -12,4 +12,16 @@ public interface FilmStorage {
     Film update(Film film);
 
     Film findFilmById(Long id);
+
+    void addLike(Long id, Long userId);
+
+    void removeLike(Long filmId, Long userId);
+
+    List<Film.Genre> findAllGenres();
+
+    Film.Genre findGenreById(Integer genreId);
+
+    List<Film.Mpa> findAllRatings();
+
+    Film.Mpa findRatingById(Integer ratingId);
 }

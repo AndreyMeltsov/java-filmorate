@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 @EqualsAndHashCode
 public class User {
@@ -37,5 +39,13 @@ public class User {
     @Past
     private LocalDate birthday;
 
-    private final Map<Long, Boolean> friendsIdsAndStatus = new HashMap<>();
+    @Setter
+    private Map<Long, FriendshipStatus> friendsIdsAndStatus = new HashMap<>();
+
+    public User( String login, String name, String email, LocalDate birthday) {
+        this.login = login;
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+    }
 }

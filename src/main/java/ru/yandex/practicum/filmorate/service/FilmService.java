@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +14,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
 
     public List<Film> findAll() {
         return filmStorage.findAll();
@@ -35,19 +32,13 @@ public class FilmService {
     }
 
     public Film addLike(Long id, Long userId) {
-        Film film = filmStorage.findFilmById(id);
-        User user = userStorage.findUserById(userId);
-        film.getLikesIds().add(userId);
-        log.debug("User {} added a like to film {}", user, film);
-        return film;
+        filmStorage.addLike(id, userId);
+        return filmStorage.findFilmById(id);
     }
 
     public Film removeLike(Long id, Long userId) {
-        Film film = filmStorage.findFilmById(id);
-        User user = userStorage.findUserById(userId);
-        film.getLikesIds().remove(userId);
-        log.debug("User {} removed a like of film {}", user, film);
-        return film;
+        filmStorage.removeLike(id, userId);
+        return filmStorage.findFilmById(id);
     }
 
     public List<Film> getMostPopularFilms(Integer count) {
@@ -57,5 +48,21 @@ public class FilmService {
                 .collect(Collectors.toList());
         log.debug("The most popular films are: {}", mostPopularFilms);
         return mostPopularFilms;
+    }
+
+    public List<Film.Genre> findAllGenres() {
+        return filmStorage.findAllGenres();
+    }
+
+    public Film.Genre findGenreById(Integer genreId) {
+        return filmStorage.findGenreById(genreId);
+    }
+
+    public List<Film.Mpa> findAllRatings() {
+        return filmStorage.findAllRatings();
+    }
+
+    public Film.Mpa findRatingById(Integer ratingId) {
+        return filmStorage.findRatingById(ratingId);
     }
 }

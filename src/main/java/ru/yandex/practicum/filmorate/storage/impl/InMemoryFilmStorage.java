@@ -50,6 +50,33 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(id);
     }
 
+    @Override
+    public void addLike(Long id, Long userId) { /* TODO document why this method is empty */ }
+
+    @Override
+    public void removeLike(Long filmId, Long userId) { /* TODO document why this method is empty */ }
+
+    @Override
+    public List<Film.Genre> findAllGenres() {
+        return null;
+    }
+
+    @Override
+    public Film.Genre findGenreById(Integer genreId) {
+        return null;
+    }
+
+    @Override
+    public List<Film.Mpa> findAllRatings() {
+        return null;
+    }
+
+    @Override
+    public Film.Mpa findRatingById(Integer ratingId) {
+        return null;
+    }
+
+
     private Long generateId() {
         return ++identifier;
     }

@@ -31,3 +31,4 @@ getMostPopularFilms(Integer count)
 - SELECT film_id, COUNT(user_id) FROM likes GROUP BY film_id ORDER BY
   COUNT(user_id) DESC LIMIT ?;
 
+![img.png](img.png)

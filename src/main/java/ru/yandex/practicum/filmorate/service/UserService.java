@@ -3,11 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,39 +34,22 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) {
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-        Set<Long> userFriendsIds = user.getFriendIds();
-        Set<Long> friendFriendsIds = friend.getFriendIds();
-        userFriendsIds.add(friendId);
-        friendFriendsIds.add(userId);
-        log.debug("User {} added as a friend for user {}", friend, user);
+        userStorage.addFriend(userId, friendId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-        Set<Long> userFriendsIds = user.getFriendIds();
-        Set<Long> friendFriendsIds = friend.getFriendIds();
-        userFriendsIds.remove(friendId);
-        friendFriendsIds.remove(userId);
-        log.debug("Users {} and {} are no longer friends", friend, user);
+        userStorage.removeFriend(userId, friendId);
     }
 
     public List<User> findAllFriends(Long userId) {
-        Set<Long> friendsIds = userStorage.findUserById(userId).getFriendIds();
-        List<User> friends = friendsIds.stream()
-                .map(userStorage::findUserById)
-                .collect(Collectors.toList());
-        log.debug("Friends quantity is: {}", friends.size());
-        return friends;
+        return userStorage.findAllFriends(userId);
     }
 
     public List<User> findCommonFriends(Long id, Long otherId) {
-        Set<Long> friendIds = userStorage.findUserById(id).getFriendIds();
-        Set<Long> otherFriendIds = userStorage.findUserById(otherId).getFriendIds();
-        List<User> commonFriends = friendIds.stream()
-                .filter(otherFriendIds::contains)
+        Map<Long, FriendshipStatus> friendIds = userStorage.findUserById(id).getFriendsIdsAndStatus();
+        Map<Long, FriendshipStatus> otherFriendIds = userStorage.findUserById(otherId).getFriendsIdsAndStatus();
+        List<User> commonFriends = friendIds.keySet().stream()
+                .filter(otherFriendIds::containsKey)
                 .map(userStorage::findUserById)
                 .collect(Collectors.toList());
         log.debug("Common friends quantity is: {}", commonFriends.size());
