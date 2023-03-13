@@ -17,68 +17,48 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import javax.validation.Valid;
 import java.util.List;
 
-@RequestMapping
+@RequestMapping("/films")
 @RestController
 @RequiredArgsConstructor
 public class FilmController {
     private final FilmService filmService;
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> findAll() {
         return filmService.findAll();
     }
 
-    @PostMapping("/films")
+    @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         return filmService.create(film);
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         return filmService.update(film);
     }
 
-    @PutMapping("/films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
         return filmService.addLike(id, userId);
     }
 
-    @DeleteMapping("/films/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public Film removeLike(@PathVariable Long id, @PathVariable Long userId) {
         return filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/films/{id}")
+    @GetMapping("/{id}")
     public Film findFilmById(@PathVariable Long id) {
         return filmService.findFilmById(id);
     }
 
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public List<Film> getMostPopularFilms(
             @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
         if (count <= 0) {
             throw new IncorrectParameterException("Count parameter cannot be less than zero");
         }
         return filmService.getMostPopularFilms(count);
-    }
-
-    @GetMapping("/genres")
-    public List<Film.Genre> findAllGenres() {
-        return filmService.findAllGenres();
-    }
-
-    @GetMapping("/genres/{id}")
-    public Film.Genre findGenreById(@PathVariable Integer id) {
-        return filmService.findGenreById(id);
-    }
-
-    @GetMapping("/mpa")
-    public List<Film.Mpa> findAllRatings() {
-        return filmService.findAllRatings();
-    }
-
-    @GetMapping("/mpa/{id}")
-    public Film.Mpa findRatingById(@PathVariable Integer id) {
-        return filmService.findRatingById(id);
     }
 }

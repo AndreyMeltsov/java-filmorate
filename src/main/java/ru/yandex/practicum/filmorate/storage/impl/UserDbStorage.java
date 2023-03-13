@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -26,8 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.model.FriendshipStatus.REQUESTED;
 
-@Component("userDbStorage")
-@Primary
+@Component
 @Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
@@ -86,8 +84,8 @@ public class UserDbStorage implements UserStorage {
             User user = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> makeUser(rs, id), id);
             log.debug("User is found in DB: {}", user);
             return user;
-        } catch (DataAccessException e) {
-            throw new UserNotFoundException("User with such id wasn't found in DB");
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("User with such id wasn't found in DB");
         }
     }
 
@@ -116,9 +114,24 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findAllFriends(Long userId) {
-        List<User> friends = findAllFriendsAndStatuses(userId).keySet().stream().map(this::findUserById).collect(Collectors.toList());
+        List<User> friends = findAllFriendsAndStatuses(userId)
+                .keySet()
+                .stream()
+                .map(this::findUserById)
+                .collect(Collectors.toList());
         log.debug("Friends quantity is: {}", friends.size());
         return friends;
+    }
+
+    @Override
+    public List<User> findCommonFriends(Long id, Long otherId) {
+        String sqlQuery = "SELECT * FROM users WHERE id IN " +
+                "(SELECT friend_id FROM user_friends AS a WHERE a.user_id = ? AND a.friend_id IN " +
+                "(SELECT friend_id FROM user_friends AS b WHERE b.user_id = ?))";
+
+        List<User> commonFriends = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), id, otherId);
+        log.debug("Common friends quantity is: {}", commonFriends.size());
+        return commonFriends;
     }
 
     private Map<Long, FriendshipStatus> findAllFriendsAndStatuses(Long userId) {

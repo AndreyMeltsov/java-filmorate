@@ -10,7 +10,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 
@@ -28,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FilmorateApplicationTests {
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
+    private final GenreStorage genreStorage;
+    private final MpaStorage mpaStorage;
 
     @Order(1)
     @Test
@@ -130,8 +136,8 @@ class FilmorateApplicationTests {
                 LocalDate.of(1984, 5, 7),
                 97,
                 null,
-                Arrays.asList(new Film.Genre(4), new Film.Genre(6)),
-                new Film.Mpa(4));
+                Arrays.asList(new Genre(4), new Genre(6)),
+                new Mpa(4));
         filmStorage.create(film);
         Film actualFilm = filmStorage.findFilmById(1L);
 
@@ -147,8 +153,8 @@ class FilmorateApplicationTests {
                 LocalDate.of(1992, 10, 7),
                 102,
                 null,
-                Arrays.asList(new Film.Genre(4), new Film.Genre(6)),
-                new Film.Mpa(4));
+                Arrays.asList(new Genre(4), new Genre(6)),
+                new Mpa(4));
         film.setId(1L);
         filmStorage.update(film);
         Film actualFilm = filmStorage.findFilmById(1L);
@@ -181,7 +187,7 @@ class FilmorateApplicationTests {
     @Order(12)
     @Test
     void testFindAllGenres() {
-        List<Film.Genre> genres = filmStorage.findAllGenres();
+        List<Genre> genres = genreStorage.findAllGenres();
 
         assertThat(genres).hasSize(6);
     }
@@ -189,14 +195,14 @@ class FilmorateApplicationTests {
     @Order(13)
     @Test
     void testFindGenreById() {
-        Film.Genre actualGenre = filmStorage.findGenreById(3);
+        Genre actualGenre = genreStorage.findGenreById(3);
         assertThat(actualGenre.getName()).isEqualTo("Мультфильм");
     }
 
     @Order(14)
     @Test
     void testFindAllRatings() {
-        List<Film.Mpa> ratings = filmStorage.findAllRatings();
+        List<Mpa> ratings = mpaStorage.findAllRatings();
 
         assertThat(ratings).hasSize(5);
     }
@@ -204,7 +210,7 @@ class FilmorateApplicationTests {
     @Order(15)
     @Test
     void testFindRatingById() {
-        Film.Mpa actualRating = filmStorage.findRatingById(3);
+        Mpa actualRating = mpaStorage.findRatingById(3);
         assertThat(actualRating.getName()).isEqualTo("PG-13");
     }
 

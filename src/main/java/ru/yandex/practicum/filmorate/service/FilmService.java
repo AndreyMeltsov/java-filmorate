@@ -49,20 +49,4 @@ public class FilmService {
         log.debug("The most popular films are: {}", mostPopularFilms);
         return mostPopularFilms;
     }
-
-    public List<Film.Genre> findAllGenres() {
-        return filmStorage.findAllGenres();
-    }
-
-    public Film.Genre findGenreById(Integer genreId) {
-        return filmStorage.findGenreById(genreId);
-    }
-
-    public List<Film.Mpa> findAllRatings() {
-        return filmStorage.findAllRatings();
-    }
-
-    public Film.Mpa findRatingById(Integer ratingId) {
-        return filmStorage.findRatingById(ratingId);
-    }
 }

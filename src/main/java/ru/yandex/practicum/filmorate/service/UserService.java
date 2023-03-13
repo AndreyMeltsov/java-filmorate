@@ -3,13 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,13 +43,6 @@ public class UserService {
     }
 
     public List<User> findCommonFriends(Long id, Long otherId) {
-        Map<Long, FriendshipStatus> friendIds = userStorage.findUserById(id).getFriendsIdsAndStatus();
-        Map<Long, FriendshipStatus> otherFriendIds = userStorage.findUserById(otherId).getFriendsIdsAndStatus();
-        List<User> commonFriends = friendIds.keySet().stream()
-                .filter(otherFriendIds::containsKey)
-                .map(userStorage::findUserById)
-                .collect(Collectors.toList());
-        log.debug("Common friends quantity is: {}", commonFriends.size());
-        return commonFriends;
+        return userStorage.findCommonFriends(id, otherId);
     }
 }

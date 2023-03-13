@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.yandex.practicum.filmorate.annotation.FutureFromCinemaBirthday;
@@ -59,21 +58,4 @@ public class Film {
 
     private Mpa mpa;
 
-    @RequiredArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    public static class Mpa {
-        private final int id;
-        @Setter
-        private String name;
-    }
-
-    @RequiredArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    public static class Genre {
-        private final int id;
-        @Setter
-        private String name;
-    }
 }
