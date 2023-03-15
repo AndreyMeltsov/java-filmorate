@@ -20,23 +20,6 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 public class Film {
-
-    public Film(String name,
-                String description,
-                LocalDate releaseDate,
-                int duration,
-                List<Long> likesIds,
-                List<Genre> genres,
-                Mpa mpa) {
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.likesIds = likesIds;
-        this.genres = genres;
-        this.mpa = mpa;
-    }
-
     @Setter
     private Long id;
 

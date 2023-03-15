@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,12 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.model.FriendshipStatus.REQUESTED;
 
 @Component
-@Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -36,17 +33,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findAll() {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users", (rs, rowNum) -> makeUser(rs));
-        log.debug("Users quantity is: {}", users.size());
-        return users;
+        return jdbcTemplate.query("SELECT * FROM users", (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
     public User create(User user) {
-        String sqlQuery = "insert into users(email, login, name, birthday) values (?, ?, ?, ?)";
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+        String sqlQuery = "INSERT INTO users(email, login, name, birthday) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -59,21 +51,15 @@ public class UserDbStorage implements UserStorage {
         }, keyHolder);
 
         user.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-
-        log.debug("User is added: {}", user);
         return user;
     }
 
     @Override
     public User update(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
         findUserById(user.getId());
-        String sqlQuery = "merge into users key (id) values (?, ?, ?, ?, ?)";
+        String sqlQuery = "MERGE INTO users KEY (id) VALUES (?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sqlQuery, user.getId(), user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
-        log.debug("User is updated: {}", user);
         return user;
     }
 
@@ -81,9 +67,7 @@ public class UserDbStorage implements UserStorage {
     public User findUserById(Long id) {
         String sqlQuery = "SELECT * FROM users WHERE id = ?";
         try {
-            User user = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> makeUser(rs, id), id);
-            log.debug("User is found in DB: {}", user);
-            return user;
+            return jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> makeUser(rs, id), id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("User with such id wasn't found in DB");
         }
@@ -95,43 +79,30 @@ public class UserDbStorage implements UserStorage {
         findUserById(friendId);
 
         String sqlQuery = "INSERT INTO user_friends (user_id, friend_id, status) VALUES (?, ?, ?)";
-
         jdbcTemplate.update(sqlQuery, userId, friendId, REQUESTED.name());
-        log.debug("User with id {} is added as a friend for user with id {}", friendId, userId);
     }
 
     @Override
-    public void removeFriend(Long userId, Long friendId) {
+    public Integer removeFriend(Long userId, Long friendId) {
         findUserById(userId);
         findUserById(friendId);
 
         String sqlQuery = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
-
-        if (jdbcTemplate.update(sqlQuery, userId, friendId) > 0) {
-            log.debug("Users with id {} and id {} are no longer friends", userId, friendId);
-        }
+        return jdbcTemplate.update(sqlQuery, userId, friendId);
     }
 
     @Override
     public List<User> findAllFriends(Long userId) {
-        List<User> friends = findAllFriendsAndStatuses(userId)
-                .keySet()
-                .stream()
-                .map(this::findUserById)
-                .collect(Collectors.toList());
-        log.debug("Friends quantity is: {}", friends.size());
-        return friends;
+        String sqlQuery = "SELECT * FROM user_friends uf JOIN users u ON u.id = uf.friend_id WHERE user_id = ?";
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), userId);
     }
 
     @Override
     public List<User> findCommonFriends(Long id, Long otherId) {
         String sqlQuery = "SELECT * FROM users WHERE id IN " +
-                "(SELECT friend_id FROM user_friends AS a WHERE a.user_id = ? AND a.friend_id IN " +
-                "(SELECT friend_id FROM user_friends AS b WHERE b.user_id = ?))";
-
-        List<User> commonFriends = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), id, otherId);
-        log.debug("Common friends quantity is: {}", commonFriends.size());
-        return commonFriends;
+                "(SELECT a.friend_id FROM user_friends AS a JOIN user_friends AS b ON a.friend_id = b.friend_id " +
+                "WHERE a.user_id = ? AND b.user_id = ?)";
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), id, otherId);
     }
 
     private Map<Long, FriendshipStatus> findAllFriendsAndStatuses(Long userId) {

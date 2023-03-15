@@ -41,11 +41,4 @@ public class User {
 
     @Setter
     private Map<Long, FriendshipStatus> friendsIdsAndStatus = new HashMap<>();
-
-    public User( String login, String name, String email, LocalDate birthday) {
-        this.login = login;
-        this.name = name;
-        this.email = email;
-        this.birthday = birthday;
-    }
 }

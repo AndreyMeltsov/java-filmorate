@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
-@RestControllerAdvice(basePackages = "ru.yandex.practicum.filmorate.controller")
+@RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
     private static final String LOG_MESSAGE = "Bad request : ";

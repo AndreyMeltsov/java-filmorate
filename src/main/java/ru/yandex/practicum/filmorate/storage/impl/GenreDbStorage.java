@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -15,25 +14,20 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<Genre> findAllGenres() {
         String sql = "SELECT * FROM genres ORDER BY id";
-        List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
-        log.debug("Genres quantity is: {}", genres.size());
-        return genres;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
     }
 
     @Override
     public Genre findGenreById(Integer genreId) {
         String sql = "SELECT * FROM genres WHERE id = ?";
         try {
-            Genre genre = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeGenre(rs), genreId);
-            log.debug("Genre {} was found", genre);
-            return genre;
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeGenre(rs), genreId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Genre with such id wasn't found");
         }

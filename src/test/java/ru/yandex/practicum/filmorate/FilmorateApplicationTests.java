@@ -38,11 +38,12 @@ class FilmorateApplicationTests {
     @Order(1)
     @Test
     void testCreateUser() {
-        User user = new User(
+        User user = new User(null,
+                "mail@mail.ru",
                 "meltsov",
                 "",
-                "mail@mail.ru",
-                LocalDate.of(1984, 12, 15));
+                LocalDate.of(1984, 12, 15),
+                null);
         userStorage.create(user);
         User actualUser = userStorage.findUserById(1L);
 
@@ -52,11 +53,12 @@ class FilmorateApplicationTests {
     @Order(2)
     @Test
     void testUpdateUser() {
-        User newUser = new User(
+        User newUser = new User(null,
+                "yandex@yandex.ru",
                 "pupkin",
                 "Vasiliy",
-                "yandex@yandex.ru",
-                LocalDate.of(1993, 12, 15));
+                LocalDate.of(1993, 12, 15),
+                null);
         newUser.setId(1L);
         userStorage.update(newUser);
         User actualUser = userStorage.findUserById(1L);
@@ -89,11 +91,12 @@ class FilmorateApplicationTests {
     @Order(5)
     @Test
     void testAddFriend() {
-        User user = new User(
+        User user = new User(null,
+                "mail@mail.ru",
                 "meltsov",
                 "",
-                "mail@mail.ru",
-                LocalDate.of(1984, 12, 15));
+                LocalDate.of(1984, 12, 15),
+                null);
         userStorage.create(user);
         userStorage.addFriend(1L, 2L);
 
@@ -105,11 +108,12 @@ class FilmorateApplicationTests {
     @Order(6)
     @Test
     void testFindAllFriends() {
-        User user = new User(
+        User user = new User(null,
+                "google@gmail.com",
                 "gubkin",
                 "Kolya",
-                "google@gmail.com",
-                LocalDate.of(1965, 12, 11));
+                LocalDate.of(1965, 12, 11),
+                null);
         userStorage.create(user);
         userStorage.addFriend(1L, 3L);
 
@@ -130,7 +134,7 @@ class FilmorateApplicationTests {
     @Order(8)
     @Test
     void testCreateFilm() {
-        Film film = new Film(
+        Film film = new Film(null,
                 "Terminator",
                 "Robot from the future tries to kill the head of rebels mother",
                 LocalDate.of(1984, 5, 7),
@@ -147,7 +151,7 @@ class FilmorateApplicationTests {
     @Order(9)
     @Test
     void testUpdateFilm() {
-        Film film = new Film(
+        Film film = new Film(null,
                 "Terminator 2",
                 "Robot from the future tries to protect the head of rebels mother",
                 LocalDate.of(1992, 10, 7),

@@ -16,28 +16,40 @@ public class FilmService {
     private final FilmStorage filmStorage;
 
     public List<Film> findAll() {
-        return filmStorage.findAll();
+        List<Film> films = filmStorage.findAll();
+        log.debug("Films quantity is: {}", films.size());
+        return films;
     }
 
     public Film create(Film film) {
-        return filmStorage.create(film);
+        film = filmStorage.create(film);
+        log.debug("Film is added: {}", film);
+        return film;
     }
 
     public Film update(Film film) {
-        return filmStorage.update(film);
+        film = filmStorage.update(film);
+        log.debug("Film is updated: {}", film);
+        return film;
     }
 
     public Film findFilmById(Long id) {
-        return filmStorage.findFilmById(id);
+        Film film = filmStorage.findFilmById(id);
+        log.debug("Film is found in DB: {}", film);
+        return film;
     }
 
     public Film addLike(Long id, Long userId) {
         filmStorage.addLike(id, userId);
+        log.debug("User with id {} added a like to film with id {}", userId, id);
         return filmStorage.findFilmById(id);
     }
 
     public Film removeLike(Long id, Long userId) {
-        filmStorage.removeLike(id, userId);
+        int rows = filmStorage.removeLike(id, userId);
+        if (rows > 0) {
+            log.debug("User with id {} removed a like of film with id {}", userId, id);
+        }
         return filmStorage.findFilmById(id);
     }
 
