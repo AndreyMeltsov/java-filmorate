@@ -7,8 +7,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -17,57 +15,55 @@ public class UserService {
     private final UserStorage userStorage;
 
     public List<User> findAll() {
-        return userStorage.findAll();
+        List<User> users = userStorage.findAll();
+        log.debug("Users quantity is: {}", users.size());
+        return users;
     }
 
     public User create(User user) {
-        return userStorage.create(user);
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        user = userStorage.create(user);
+        log.debug("User is added: {}", user);
+        return user;
     }
 
     public User update(User user) {
-        return userStorage.update(user);
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        user = userStorage.update(user);
+        log.debug("User is updated: {}", user);
+        return user;
     }
 
     public User findUserById(Long id) {
-        return userStorage.findUserById(id);
+        User user = userStorage.findUserById(id);
+        log.debug("User is found in DB: {}", user);
+        return user;
     }
 
     public void addFriend(Long userId, Long friendId) {
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-        Set<Long> userFriendsIds = user.getFriendIds();
-        Set<Long> friendFriendsIds = friend.getFriendIds();
-        userFriendsIds.add(friendId);
-        friendFriendsIds.add(userId);
-        log.debug("User {} added as a friend for user {}", friend, user);
+        userStorage.addFriend(userId, friendId);
+        log.debug("User with id {} is added as a friend for user with id {}", friendId, userId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-        Set<Long> userFriendsIds = user.getFriendIds();
-        Set<Long> friendFriendsIds = friend.getFriendIds();
-        userFriendsIds.remove(friendId);
-        friendFriendsIds.remove(userId);
-        log.debug("Users {} and {} are no longer friends", friend, user);
+        int rows = userStorage.removeFriend(userId, friendId);
+        if (rows > 0) {
+            log.debug("Users with id {} and id {} are no longer friends", userId, friendId);
+        }
     }
 
     public List<User> findAllFriends(Long userId) {
-        Set<Long> friendsIds = userStorage.findUserById(userId).getFriendIds();
-        List<User> friends = friendsIds.stream()
-                .map(userStorage::findUserById)
-                .collect(Collectors.toList());
+        List<User> friends = userStorage.findAllFriends(userId);
         log.debug("Friends quantity is: {}", friends.size());
         return friends;
     }
 
     public List<User> findCommonFriends(Long id, Long otherId) {
-        Set<Long> friendIds = userStorage.findUserById(id).getFriendIds();
-        Set<Long> otherFriendIds = userStorage.findUserById(otherId).getFriendIds();
-        List<User> commonFriends = friendIds.stream()
-                .filter(otherFriendIds::contains)
-                .map(userStorage::findUserById)
-                .collect(Collectors.toList());
+        List<User> commonFriends = userStorage.findCommonFriends(id, otherId);
         log.debug("Common friends quantity is: {}", commonFriends.size());
         return commonFriends;
     }
