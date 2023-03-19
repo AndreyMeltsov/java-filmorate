@@ -58,7 +58,7 @@ public class UserService {
 
     public List<User> findAllFriends(Long userId) {
         List<User> friends = userStorage.findAllFriends(userId);
-                log.debug("Friends quantity is: {}", friends.size());
+        log.debug("Friends quantity is: {}", friends.size());
         return friends;
     }
 

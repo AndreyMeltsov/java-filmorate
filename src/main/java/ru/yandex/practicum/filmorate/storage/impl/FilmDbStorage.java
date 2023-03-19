@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -27,7 +26,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final UserStorage userStorage;
     private final GenreStorage genreStorage;
 
     @Override
@@ -64,7 +62,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        findFilmById(film.getId());
         String sqlQuery = "MERGE INTO films KEY (id) VALUES (?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sqlQuery,
@@ -97,16 +94,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(Long filmId, Long userId) {
-        findFilmById(filmId);
-        userStorage.findUserById(userId);
         String sqlQuery = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, filmId, userId);
     }
 
     @Override
     public Integer removeLike(Long filmId, Long userId) {
-        findFilmById(filmId);
-        userStorage.findUserById(userId);
         String sqlQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
         return jdbcTemplate.update(sqlQuery, filmId, userId);
     }

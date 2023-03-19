@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserService userService;
 
     public List<Film> findAll() {
         List<Film> films = filmStorage.findAll();
@@ -28,6 +29,7 @@ public class FilmService {
     }
 
     public Film update(Film film) {
+        findFilmById(film.getId());
         film = filmStorage.update(film);
         log.debug("Film is updated: {}", film);
         return film;
@@ -40,12 +42,16 @@ public class FilmService {
     }
 
     public Film addLike(Long id, Long userId) {
+        findFilmById(id);
+        userService.findUserById(userId);
         filmStorage.addLike(id, userId);
         log.debug("User with id {} added a like to film with id {}", userId, id);
         return filmStorage.findFilmById(id);
     }
 
     public Film removeLike(Long id, Long userId) {
+        findFilmById(id);
+        userService.findUserById(userId);
         int rows = filmStorage.removeLike(id, userId);
         if (rows > 0) {
             log.debug("User with id {} removed a like of film with id {}", userId, id);
